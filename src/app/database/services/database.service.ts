@@ -3,34 +3,42 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Response} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import {environment} from '../../../environments/environment';
+import {AuthService} from '../../auth/services/auth.service';
+import * as firebase from 'firebase/app';
 
 @Injectable()
 export class DatabaseService {
-    private databaseUri = environment.firebase.databaseURL;
+  private databaseUri = environment.firebase.databaseURL;
 
-    private notificationPreferencesUrl = this.databaseUri + '/notification_preferences';
+  private notificationPreferencesUrl = '/notification_preferences';
 
-    constructor(private http: HttpClient) {
-    }
+  constructor(private http: HttpClient, private authService: AuthService) {
+  }
 
-    public storeProcessedComments(userId: string, submissionName: string, processedComments: string[]): Observable<any> {
-        const fullUri = this.notificationPreferencesUrl + '/' + userId + '/' + submissionName + '.json';
-        const headers = new HttpHeaders({});
-        headers.append('Accept', 'application/json');
-        return this.http.put(fullUri, processedComments, {headers: headers})
-            .catch(this.handleErrorObservable);
-    }
+  public savePreferences(preferences: any) {
+    const userId = this.authService.getUserId();
+    firebase.database().ref(this.notificationPreferencesUrl + '/' + userId + '/' + preferences.subreddit).set(preferences);
+  }
 
-    public getProcessedComments(userId: string, submissionName: string): Observable<any> {
-        const fullUri = this.notificationPreferencesUrl + '/' + userId + '/' + submissionName + '.json';
-        const headers = new HttpHeaders({});
-        headers.append('Accept', 'application/json');
-        return this.http.get(fullUri, {headers: headers})
-            .catch(this.handleErrorObservable);
-    }
+  public getPreferences(subreddit: string): Promise<any> {
+    const userId = this.authService.getUserId();
+    return firebase.database().ref(this.notificationPreferencesUrl + '/' + userId + '/' + subreddit)
+      .once('value');
+  }
 
-    private handleErrorObservable (error: Response | any) {
-        console.error(error.message || error);
-        return Observable.throw(error.message || error);
-    }
+  public getRedditPreferences(): Promise<any> {
+    const userId = this.authService.getUserId();
+    return firebase.database().ref(this.notificationPreferencesUrl + '/' + userId + '/reddit')
+      .once('value');
+  }
+
+  public saveRedditUserName(userName: string) {
+    const userId = this.authService.getUserId();
+    firebase.database().ref(this.notificationPreferencesUrl + '/' + userId + '/reddit').set({userName: userName});
+  }
+
+  private handleErrorObservable(error: Response | any) {
+    console.error(error.message || error);
+    return Observable.throw(error.message || error);
+  }
 }

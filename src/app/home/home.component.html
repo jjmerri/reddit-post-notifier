@@ -46,9 +46,35 @@
     </div><!-- /.container-fluid -->
   </nav>
 
-  <div class="starter-template">
+  <div class="container" *ngIf="!userIsLoggedIn">
+    <div class="alert alert-warning alert-dismissible">
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+      <strong>Please Login.</strong> You must be logged in the Reddit Post Notifier to view and set notification preferences.
+    </div>
+  </div>
+
+  <div class="container" *ngIf="userIsLoggedIn && !userName">
+    <div class="alert alert-warning alert-dismissible">
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+      <strong>Please Link With Reddit.</strong> You must link with Reddit to request PM notifications.
+    </div>
+  </div>
+
+  <div [hidden]="userIsLoggedIn" id="firebaseui-auth-container"></div>
+
+  <div class="starter-template" *ngIf="userIsLoggedIn && userName">
     <div class="col-xs-12 well" style="background: rgb(252, 252, 252);">
-      <div [hidden]="userIsLoggedIn" id="firebaseui-auth-container"></div>
+      <h3>New Post Notification Preferences For
+        <select name="subredditSelect" [(ngModel)]="preferences.subreddit" (change)="loadPreferences(preferences.subreddit)">
+          <option *ngFor="let subreddit of subreddits"  [value]="subreddit">
+            {{subreddit}}
+          </option>
+        </select>
+      </h3>
+      <div>
+        <label for="redditPm">Get PMs Sent To {{userName}}: </label>
+        <input type="checkbox" id="redditPm" name="redditPm" [(ngModel)]="preferences.pmPreference" (change)="updatePreferences()"/>
+      </div>
     </div>
   </div>
 </div>

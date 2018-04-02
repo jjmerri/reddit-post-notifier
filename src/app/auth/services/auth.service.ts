@@ -53,4 +53,16 @@ export class AuthService {
       return true;
     }
   }
+
+  public getUserId(): string {
+    if (firebase.auth().currentUser != null) {
+      return firebase.auth().currentUser.uid;
+    } else {
+      return null;
+    }
+  }
+
+  public setAuthStateChangeCallback(callback): any {
+    return firebase.auth().onAuthStateChanged(callback);
+  }
 }

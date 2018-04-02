@@ -11,6 +11,8 @@ import {RedditService} from '../reddit/services/reddit.service';
 import {DatabaseService} from '../database/services/database.service';
 import {AuthService} from '../auth/services/auth.service';
 
+import swal2 from 'sweetalert2';
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -19,8 +21,10 @@ import {AuthService} from '../auth/services/auth.service';
 export class HomeComponent implements OnInit {
   private userName: string;
   private userId: string;
+  private preferences = {subreddit: 'edc_raffle', pmPreference: false};
+  private subreddits = ['edc_raffle', 'KnifeRaffle', 'lego_raffles'];
 
-  constructor(private activatedRoute: ActivatedRoute, private oauthSerice: OauthService,
+  constructor(private activatedRoute: ActivatedRoute, private oauthService: OauthService,
               private redditService: RedditService, private databaseService: DatabaseService,
               private authService: AuthService) {
   }
@@ -28,7 +32,7 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     this.activatedRoute.queryParams.subscribe((params: Params) => {
       if (params['code']) {
-        this.oauthSerice.requestAccessToken(params['code'], params['state']).subscribe(res => {
+        this.oauthService.requestAccessToken(params['code'], params['state']).subscribe(res => {
           if (res.success === true) {
             this.updateUserName();
           } else {
@@ -40,10 +44,17 @@ export class HomeComponent implements OnInit {
     });
 
     this.authService.showLogin();
+
+    const unsubscribe = this.authService.setAuthStateChangeCallback(user => {
+      if (user) {
+        this.loadPreferences('edc_raffle');
+        unsubscribe();
+      }
+    });
   }
 
   public linkWithReddit() {
-    this.oauthSerice.requestPermission();
+    this.oauthService.requestPermission();
   }
 
   private updateUserName() {
@@ -51,6 +62,13 @@ export class HomeComponent implements OnInit {
         if (userDetailsResponse.name) {
           this.userName = userDetailsResponse.name;
           this.userId = userDetailsResponse.id;
+
+          const unsubscribe = this.authService.setAuthStateChangeCallback(user => {
+            if (user) {
+              this.updateLinkeRedditUserName(userDetailsResponse.name);
+              unsubscribe();
+            }
+          });
         }
       },
       err => {
@@ -61,10 +79,58 @@ export class HomeComponent implements OnInit {
 
   private logout() {
     this.authService.logout();
+    this.logoutReddit();
     this.authService.showLogin();
   }
 
-  public get userIsLoggedIn(): boolean {
+  private logoutReddit() {
+    this.oauthService.logout();
+    this.userId = null;
+    this.userName = null;
+  }
+
+  private get userIsLoggedIn(): boolean {
     return this.authService.isLoggedIn();
+  }
+
+  private updatePreferences() {
+    this.databaseService.savePreferences(this.preferences);
+  }
+
+  private loadPreferences(subreddit) {
+    this.databaseService.getPreferences(subreddit).then(snapshot => {
+      const preferences = snapshot.val();
+      if (preferences) {
+        this.preferences = preferences;
+      } else {
+        this.preferences = {subreddit: subreddit, pmPreference: false};
+      }
+    });
+  }
+
+  private updateLinkeRedditUserName(userName: string) {
+    this.databaseService.getRedditPreferences().then(snapshot => {
+      const redditPreferences = snapshot.val();
+      if (redditPreferences && redditPreferences.userName !== userName) {
+        swal2({
+                type: 'warning',
+                title: 'Previously Linked With ' + redditPreferences.userName,
+                text: '. You can only link with one Reddit account per Reddit Post Notifier account. ' +
+                      'Click Ok to relink with ' + userName + ' or click cancel to sign in to Reddit with the other account.',
+                showCancelButton: true,
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'Ok'
+              }
+        ).then(() => {
+          this.databaseService.saveRedditUserName(userName);
+        }, (dismiss) => {
+          this.logoutReddit();
+          this.linkWithReddit();
+        });
+      } else {
+        this.databaseService.saveRedditUserName(userName);
+      }
+    });
   }
 }
