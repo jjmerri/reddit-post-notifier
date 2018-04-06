@@ -65,7 +65,7 @@
   <div class="starter-template" *ngIf="userIsLoggedIn && userName">
     <div class="col-xs-12 well" style="background: rgb(252, 252, 252);">
       <h3>New Post Notification Preferences For
-        <select name="subredditSelect" [(ngModel)]="preferences.subreddit" (change)="loadPreferences(preferences.subreddit)">
+        <select name="subredditSelect" [(ngModel)]="selectedSubreddit" (change)="loadPreferences(selectedSubreddit)">
           <option *ngFor="let subreddit of subreddits"  [value]="subreddit">
             {{subreddit}}
           </option>

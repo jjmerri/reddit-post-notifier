@@ -15,26 +15,26 @@ export class DatabaseService {
   constructor(private http: HttpClient, private authService: AuthService) {
   }
 
-  public savePreferences(preferences: any) {
+  public savePreferences(preferences: any, subreddit_name: string) {
     const userId = this.authService.getUserId();
-    firebase.database().ref(this.notificationPreferencesUrl + '/' + userId + '/' + preferences.subreddit).set(preferences);
+    firebase.database().ref(this.notificationPreferencesUrl + '/subreddits/' + subreddit_name + '/user_preferences/' + userId).set(preferences);
   }
 
   public getPreferences(subreddit: string): Promise<any> {
     const userId = this.authService.getUserId();
-    return firebase.database().ref(this.notificationPreferencesUrl + '/' + userId + '/' + subreddit)
+    return firebase.database().ref(this.notificationPreferencesUrl + '/subreddits/' + subreddit + '/user_preferences/' + userId)
       .once('value');
   }
 
   public getRedditPreferences(): Promise<any> {
     const userId = this.authService.getUserId();
-    return firebase.database().ref(this.notificationPreferencesUrl + '/' + userId + '/reddit')
+    return firebase.database().ref(this.notificationPreferencesUrl + '/users/' + userId + '/reddit')
       .once('value');
   }
 
   public saveRedditUserName(userName: string) {
     const userId = this.authService.getUserId();
-    firebase.database().ref(this.notificationPreferencesUrl + '/' + userId + '/reddit').set({userName: userName});
+    firebase.database().ref(this.notificationPreferencesUrl + '/users/' + userId + '/reddit').set({userName: userName});
   }
 
   private handleErrorObservable(error: Response | any) {

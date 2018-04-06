@@ -21,8 +21,9 @@ import swal2 from 'sweetalert2';
 export class HomeComponent implements OnInit {
   private userName: string;
   private userId: string;
-  private preferences = {subreddit: 'edc_raffle', pmPreference: false};
-  private subreddits = ['edc_raffle', 'KnifeRaffle', 'lego_raffles'];
+  private preferences = {pmPreference: false};
+  private selectedSubreddit = 'edc_raffle'
+  private subreddits = ['edc_raffle', 'KnifeRaffle', 'lego_raffles', 'raffleTest'];
 
   constructor(private activatedRoute: ActivatedRoute, private oauthService: OauthService,
               private redditService: RedditService, private databaseService: DatabaseService,
@@ -94,7 +95,7 @@ export class HomeComponent implements OnInit {
   }
 
   private updatePreferences() {
-    this.databaseService.savePreferences(this.preferences);
+    this.databaseService.savePreferences(this.preferences, this.selectedSubreddit);
   }
 
   private loadPreferences(subreddit) {
@@ -103,7 +104,7 @@ export class HomeComponent implements OnInit {
       if (preferences) {
         this.preferences = preferences;
       } else {
-        this.preferences = {subreddit: subreddit, pmPreference: false};
+        this.preferences = {pmPreference: false};
       }
     });
   }
