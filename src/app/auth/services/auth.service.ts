@@ -62,6 +62,14 @@ export class AuthService {
     }
   }
 
+  public getUserEmail(): string {
+    if (firebase.auth().currentUser != null) {
+      return firebase.auth().currentUser.email;
+    } else {
+      return null;
+    }
+  }
+
   public setAuthStateChangeCallback(callback): any {
     return firebase.auth().onAuthStateChanged(callback);
   }

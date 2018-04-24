@@ -31,7 +31,7 @@
               </button>
             </form>
           </li>
-          <li *ngIf="!userName && userIsLoggedIn">
+          <!--<li *ngIf="!userName && userIsLoggedIn">
             <form class="navbar-form navbar-left">
               <button class="btn btn-default btn-sm" (click)="linkWithReddit()">Link with Reddit</button>
             </form>
@@ -40,11 +40,22 @@
             <a>
               <strong>{{userName}}</strong>
             </a>
-          </li>
+          </li>-->
         </ul>
       </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
   </nav>
+  <div class="alert alert-success" id="success-alert">
+    <button type="button" class="close" data-dismiss="alert">x</button>
+    <strong>Success! </strong>
+    Account Info Updated!
+  </div>
+
+  <div class="alert alert-danger" id="error-alert">
+    <button type="button" class="close" data-dismiss="alert">x</button>
+    <strong>Error! </strong>
+    An Error Occured Updating Your Account Info!
+  </div>
 
   <div class="container" *ngIf="!userIsLoggedIn">
     <div class="alert alert-warning alert-dismissible">
@@ -53,7 +64,7 @@
     </div>
   </div>
 
-  <div class="container" *ngIf="userIsLoggedIn && !userName">
+  <div class="container" *ngIf="userIsLoggedIn && userName">
     <div class="alert alert-warning alert-dismissible">
       <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
       <strong>Please Link With Reddit.</strong> You must link with Reddit to request PM notifications.
@@ -62,18 +73,67 @@
 
   <div [hidden]="userIsLoggedIn" id="firebaseui-auth-container"></div>
 
-  <div class="starter-template" *ngIf="userIsLoggedIn && userName">
-    <div class="col-xs-12 well" style="background: rgb(252, 252, 252);">
-      <h3>New Post Notification Preferences For
-        <select name="subredditSelect" [(ngModel)]="selectedSubreddit" (change)="loadPreferences(selectedSubreddit)">
-          <option *ngFor="let subreddit of subreddits"  [value]="subreddit">
-            {{subreddit}}
-          </option>
-        </select>
-      </h3>
-      <div>
-        <label for="redditPm">Get PMs Sent To {{userName}}: </label>
-        <input type="checkbox" id="redditPm" name="redditPm" [(ngModel)]="preferences.pmPreference" (change)="updatePreferences()"/>
+  <div class="starter-template" *ngIf="userIsLoggedIn">
+    <div class="col-xs-12">
+      <div class="row">
+        <div class="col-xs-4 left-column">
+          <h3>Account Info</h3>
+        </div>
+        <div class="col-xs-8">
+          <h3>New Post Notification Preferences For
+            <select name="subredditSelect" [(ngModel)]="selectedSubreddit" (change)="loadSubredditPreferences(selectedSubreddit)">
+              <option *ngFor="let subreddit of subreddits"  [value]="subreddit">
+                {{subreddit}}
+              </option>
+            </select>
+          </h3>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-4 left-column">
+          <div class="input-group">
+            <span class="input-group-addon" id="basic-addon1">Email</span>
+            <div [ngClass]="{'input-group has-feedback':true, 'has-error':emailAddress.invalid}">
+              <input email placeholder="email" class="form-control" required [(ngModel)]="globalPreferences.email" #emailAddress="ngModel" id="emailAddress" name="emailAddress"/>
+              <span [ngClass]="{'glyphicon glyphicon-alert form-control-feedback': emailAddress.invalid}"></span>
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-8">
+          <!--<div>
+            <label for="redditPm">Get PMs Sent To {{userName}}: </label>
+            <input type="checkbox" id="redditPm" name="redditPm" [(ngModel)]="subredditPreferences.pmPreference" (change)="updatePreferences()"/>
+          </div>-->
+          <div>
+            <label for="emailPreference">Receive Email Notifications: </label>
+            <input type="checkbox" id="emailPreference" name="emailPreference" [(ngModel)]="subredditPreferences.emailNotification" (change)="updatePreferences()"/>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-4 left-column">
+          <div class="text-danger pull-left" *ngIf="emailAddress.invalid && (emailAddress.dirty || emailAddress.touched)">
+            <div *ngIf="emailAddress.errors?.required">
+              Email is required.
+            </div>
+            <div *ngIf="emailAddress.errors?.email && !emailAddress.errors?.required">
+              Enter valid email.
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-8">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-4 left-column">
+          <div class="btn-group pull-left">
+            <button type="button" class="btn btn-primary" [disabled] = "emailAddress.invalid" (click)="updateGlobalPreferences()">Update Account Info</button>
+          </div>
+        </div>
+        <div class="col-xs-8">
+        </div>
       </div>
     </div>
   </div>
