@@ -27,7 +27,8 @@ export class HomeComponent implements OnInit {
   private subredditPreferences = {emailNotification: false};
   private globalPreferences = {email: null};
   private selectedSubreddit = 'edc_raffle';
-  private subreddits = ['edc_raffle', 'KnifeRaffle', 'lego_raffles', 'raffleTest', 'testingground4bots'];
+  // private subreddits = ['edc_raffle', 'KnifeRaffle', 'lego_raffles', 'raffleTest', 'testingground4bots'];
+  private subreddits = ['edc_raffle', 'KnifeRaffle', 'lego_raffles'];
 
   constructor(private activatedRoute: ActivatedRoute, private oauthService: OauthService,
               private redditService: RedditService, private databaseService: DatabaseService,
