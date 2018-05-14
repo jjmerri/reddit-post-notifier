@@ -76,10 +76,10 @@
   <div class="starter-template" *ngIf="userIsLoggedIn">
     <div class="col-xs-12">
       <div class="row">
-        <div class="col-xs-4 left-column">
-          <h3>Account Info</h3>
+        <div class="col-xs-4">
+          <h3>Notification Channel Info</h3>
         </div>
-        <div class="col-xs-8">
+        <div class="col-xs-8 right-column">
           <h3>New Post Notification Preferences For
             <select name="subredditSelect" [(ngModel)]="selectedSubreddit" (change)="loadSubredditPreferences(selectedSubreddit)">
               <option *ngFor="let subreddit of subreddits"  [value]="subreddit">
@@ -91,7 +91,7 @@
       </div>
 
       <div class="row">
-        <div class="col-xs-4 left-column">
+        <div class="col-xs-4">
           <div class="input-group">
             <span class="input-group-addon" id="basic-addon1">Email</span>
             <div [ngClass]="{'input-group has-feedback':true, 'has-error':emailAddress.invalid}">
@@ -100,19 +100,28 @@
             </div>
           </div>
         </div>
-        <div class="col-xs-8">
+        <div class="col-xs-8 right-column">
           <!--<div>
             <label for="redditPm">Get PMs Sent To {{userName}}: </label>
             <input type="checkbox" id="redditPm" name="redditPm" [(ngModel)]="subredditPreferences.pmPreference" (change)="updatePreferences()"/>
           </div>-->
-          <div>
-            <label for="emailPreference">Receive Email Notifications: </label>
-            <input type="checkbox" id="emailPreference" name="emailPreference" [(ngModel)]="subredditPreferences.emailNotification" (change)="updatePreferences()"/>
+          <div class="row">
+            <div>
+              <label for="emailPreference">Receive Email Notifications: </label>
+              <input type="checkbox" id="emailPreference" name="emailPreference" [(ngModel)]="subredditPreferences.emailNotification" (change)="updatePreferences()"/>
+            </div>
           </div>
+            <div class="row">
+              <div class="col-xs-12">
+                <p class="text-left text-muted">Emails will come from redditpostnotificationbot@gmail.com.
+                   It is likely that the emails will go to your spam folder unless you add redditpostnotificationbot@gmail.com to your contact list.
+                </p>
+              </div>
+            </div>
         </div>
       </div>
       <div class="row">
-        <div class="col-xs-4 left-column">
+        <div class="col-xs-4">
           <div class="text-danger pull-left" *ngIf="emailAddress.invalid && (emailAddress.dirty || emailAddress.touched)">
             <div *ngIf="emailAddress.errors?.required">
               Email is required.
@@ -122,17 +131,17 @@
             </div>
           </div>
         </div>
-        <div class="col-xs-8">
+        <div class="col-xs-8 right-column">
         </div>
       </div>
 
       <div class="row">
-        <div class="col-xs-4 left-column">
+        <div class="col-xs-4">
           <div class="btn-group pull-left">
-            <button type="button" class="btn btn-primary" [disabled] = "emailAddress.invalid" (click)="updateGlobalPreferences()">Update Account Info</button>
+            <button type="button" class="btn btn-primary" [disabled] = "emailAddress.invalid" (click)="updateGlobalPreferences()">Update Info</button>
           </div>
         </div>
-        <div class="col-xs-8">
+        <div class="col-xs-8 right-column">
         </div>
       </div>
     </div>

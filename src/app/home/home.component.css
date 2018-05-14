@@ -20,3 +20,7 @@ body {
 .left-column {
   border-right: 1px solid #333;
 }
+
+.right-column {
+  border-left: 1px solid #333;
+}
