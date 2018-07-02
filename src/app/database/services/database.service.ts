@@ -11,6 +11,7 @@ export class DatabaseService {
   private databaseUri = environment.firebase.databaseURL;
 
   private notificationPreferencesUrl = '/notification_preferences';
+  private supportedSubredditsUrl = '/supported_subreddits';
 
   constructor(private http: HttpClient, private authService: AuthService) {
   }
@@ -29,6 +30,12 @@ export class DatabaseService {
   public getGlobalPreferences(): Promise<any> {
     const userId = this.authService.getUserId();
     return firebase.database().ref(this.notificationPreferencesUrl + '/users/' + userId + '/global_preferences')
+      .once('value');
+  }
+
+  public getSupportedSubreddits(): Promise<any> {
+    const userId = this.authService.getUserId();
+    return firebase.database().ref(this.supportedSubredditsUrl)
       .once('value');
   }
 

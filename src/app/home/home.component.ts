@@ -26,9 +26,9 @@ export class HomeComponent implements OnInit {
   private accountInfoForm: FormGroup;
   private subredditPreferences = {emailNotification: false};
   private globalPreferences = {email: null};
-  private selectedSubreddit = 'edc_raffle';
+  private selectedSubreddit = 'KnifeRaffle';
   // private subreddits = ['edc_raffle', 'KnifeRaffle', 'lego_raffles', 'raffleTest', 'testingground4bots'];
-  private subreddits = ['edc_raffle', 'KnifeRaffle', 'lego_raffles'];
+  private subreddits = [];
 
   constructor(private activatedRoute: ActivatedRoute, private oauthService: OauthService,
               private redditService: RedditService, private databaseService: DatabaseService,
@@ -49,6 +49,10 @@ export class HomeComponent implements OnInit {
       }
     });
 
+    this.databaseService.getSupportedSubreddits().then(snapshot => {
+      this.subreddits = snapshot.val();
+    });
+
     jQuery('.alert').hide();
 
     this.accountInfoForm = new FormGroup({
@@ -59,7 +63,7 @@ export class HomeComponent implements OnInit {
 
     const unsubscribe = this.authService.setAuthStateChangeCallback(user => {
       if (user) {
-        this.loadSubredditPreferences('edc_raffle');
+        this.loadSubredditPreferences('KnifeRaffle');
         this.loadUserPreferences();
         unsubscribe();
       }
